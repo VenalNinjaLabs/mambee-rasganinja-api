@@ -1,0 +1,9 @@
+export const UserRoles = [
+    'ADMINISTRATOR',
+    'DEFAULT_ADMINISTRATOR'
+];
+
+export const UserRole = {
+    ADMINISTRATOR: 'ADMINISTRATOR',
+    DEFAULT_ADMINISTRATOR: 'DEFAULT_ADMINISTRATOR'
+};
