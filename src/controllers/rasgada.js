@@ -20,7 +20,9 @@ export default class RasgadaController {
                 .paginate(filter, {
                     page,
                     limit: PAGINATION_LIMIT,
-                    sort: 'horario'
+                    sort: {
+                        horario: -1
+                    }
                 })
                 .then(rasgadas => {
                     let nextPage = rasgadas.docs.length < rasgadas.limit ? rasgadas.page : ++rasgadas.page;
