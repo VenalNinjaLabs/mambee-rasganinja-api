@@ -25,10 +25,9 @@ export default class RasgadaController {
                     }
                 })
                 .then(rasgadas => {
-                    let nextPage = rasgadas.docs.length < rasgadas.limit ? rasgadas.page : ++rasgadas.page;
+                    let nextPage = rasgadas.docs.length < rasgadas.limit ? 'end' : ++rasgadas.page;
                     res.json({
                         rasgadas: rasgadas.docs,
-                        pages: rasgadas.pages,
                         nextPage,
                         total: rasgadas.total
                     });
