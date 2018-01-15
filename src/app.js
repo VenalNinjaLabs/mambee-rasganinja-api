@@ -29,8 +29,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Auth middleware
-app.use(middleware.tokenFilter);
-app.use(middleware.authFilter);
+/* app.use(middleware.tokenFilter);
+app.use(middleware.authFilter); */
 
 // API routes
 app.use('/api/auth', AuthRouter);
