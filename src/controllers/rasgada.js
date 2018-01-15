@@ -79,6 +79,54 @@ export default class RasgadaController {
             next(e);
         }
     }
+    static voteUp(req, res, next) {
+        try {
+            let id = req.params.id;
+            let updatedRasgada = req.body;
+            Rasgada
+                .findById(id)
+                .exec()
+                .then(rasgada => {
+                    return Rasgada.update({
+                        _id: id
+                    }, {
+                        $inc: {
+                            votosPositivos: 1
+                        }
+                    }, {
+                        new: true
+                    });
+                })
+                .then(rasgada => res.json(rasgada))
+                .catch(next)
+        } catch (e) {
+            next(e);
+        }
+    }
+    static voteDown(req, res, next) {
+        try {
+            let id = req.params.id;
+            let updatedRasgada = req.body;
+            Rasgada
+                .findById(id)
+                .exec()
+                .then(rasgada => {
+                    return Rasgada.update({
+                        _id: id
+                    }, {
+                        $inc: {
+                            votosNegativos: 1
+                        }
+                    }, {
+                        new: true
+                    });
+                })
+                .then(rasgada => res.json(rasgada))
+                .catch(next)
+        } catch (e) {
+            next(e);
+        }
+    }
 
     static delete(req, res, next) {
         try {

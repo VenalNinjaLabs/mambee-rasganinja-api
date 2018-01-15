@@ -10,7 +10,8 @@ let RasgadaRouter = Router();
 RasgadaRouter.get('/', RasgadaController.list);
 RasgadaRouter.get('/:id', RasgadaController.get);
 RasgadaRouter.post('/', RasgadaController.post);
-RasgadaRouter.put('/:id', filter.adminFilter, RasgadaController.put);
+RasgadaRouter.put('/:id/up', RasgadaController.voteUp);
+RasgadaRouter.put('/:id/down', RasgadaController.voteDown);
 RasgadaRouter.delete('/:id', filter.adminFilter, RasgadaController.delete);
 
 export default RasgadaRouter;
