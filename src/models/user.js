@@ -1,11 +1,21 @@
 import mongoose from 'mongoose';
-import { hash, compare } from 'bcrypt';
+import {
+    hash,
+    compare
+} from 'bcrypt';
 import isEmail from 'validator/lib/isEmail';
 
-import { EXCEPTION } from '../constants';
-import { ExceptionFactory } from '../util';
+import {
+    EXCEPTION
+} from '../constants';
+import {
+    ExceptionFactory
+} from '../util';
 
-import { UserRole, UserRoles } from './user.roles';
+import {
+    UserRole,
+    UserRoles
+} from './user.roles';
 
 import mongoosePaginate from 'mongoose-paginate';
 
@@ -17,29 +27,29 @@ let userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         unique: true,
-        require: true   
+        require: true
     },
-    email: { 
-        type: String, 
+    email: {
+        type: String,
         trim: true,
-        unique: true, 
+        unique: true,
         required: true,
         validate: {
             validator: email => isEmail(email),
             message: '{VALUE} is not valid email'
         }
     },
-    name: { 
+    name: {
         type: String,
         required: true,
-        trim: true     
+        trim: true
     },
-    password: { 
+    password: {
         type: String,
         required: true,
-        trim: true    
+        trim: true
     },
-    role: { 
+    role: {
         type: String,
         enum: UserRoles,
         index: true,
@@ -58,10 +68,10 @@ let userSchema = new mongoose.Schema({
 
 userSchema.plugin(mongoosePaginate);
 
-userSchema.set('toJSON', { 
+userSchema.set('toJSON', {
     getters: true,
     virtuals: true,
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
@@ -69,34 +79,36 @@ userSchema.set('toJSON', {
         delete ret.resetPassword;
     }
 })
-userSchema.set('toObject', { 
+userSchema.set('toObject', {
     getters: true,
     virtuals: true,
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
         delete ret.resetPassword;
     }
 });
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
     this.constructor
-        .find({ role: UserRole.DEFAULT_ADMINISTRATOR })
+        .find({
+            role: UserRole.DEFAULT_ADMINISTRATOR
+        })
         .exec()
         .then(users => {
-            if(users.length && this.role === UserRole.DEFAULT_ADMINISTRATOR) {
+            if (users.length && this.role === UserRole.DEFAULT_ADMINISTRATOR) {
                 throw new ExceptionFactory(EXCEPTION.ONLY_ONE_DEFAULT_ADMIN);
             }
             return;
         })
         .then(something => hash(this.password, saltRounds))
-        .then(hash => { 
+        .then(hash => {
             this.password = hash;
             next();
         })
         .catch(next);
 });
-userSchema.pre('update', function(next) {
-    if(this._update.$set.resetPassword) {
+userSchema.pre('update', function (next) {
+    if (this._update.$set.resetPassword) {
         hash(this._update.$set.password, saltRounds)
-            .then(hash => { 
+            .then(hash => {
                 this._update.$set.password = hash;
                 this._update.$set.resetPassword = false;
                 next();
@@ -105,31 +117,39 @@ userSchema.pre('update', function(next) {
     }
     next();
 });
-userSchema.statics.asSearch = function(query, attrs, plus) {
+userSchema.statics.asSearch = function (query, attrs, plus) {
     query = query ? query : '';
-    let or = attrs.map(attr => ({ [attr]: new RegExp(`.*${query}.*`, 'i') }));
-    return plus ? { $and: [{ $or: or }, plus] } : { $or: or };
+    let or = attrs.map(attr => ({
+        [attr]: new RegExp(`.*${query}.*`, 'i')
+    }));
+    return plus ? {
+        $and: [{
+            $or: or
+        }, plus]
+    } : {
+        $or: or
+    };
 }
-userSchema.methods.hasSystemRestriction = function(newRole) {
-    if(this.role !== UserRole.DEFAULT_ADMINISTRATOR && newRole === UserRole.DEFAULT_ADMINISTRATOR) {
+userSchema.methods.hasSystemRestriction = function (newRole) {
+    if (this.role !== UserRole.DEFAULT_ADMINISTRATOR && newRole === UserRole.DEFAULT_ADMINISTRATOR) {
         return new ExceptionFactory(EXCEPTION.ONLY_ONE_DEFAULT_ADMIN);
-    } else if(this.role === UserRole.DEFAULT_ADMINISTRATOR && newRole !== UserRole.DEFAULT_ADMINISTRATOR) {
+    } else if (this.role === UserRole.DEFAULT_ADMINISTRATOR && newRole !== UserRole.DEFAULT_ADMINISTRATOR) {
         return new ExceptionFactory(EXCEPTION.AT_LEAST_DEFAULT_ADMIN);
     }
     return false;
 }
-userSchema.methods.isDefaultAdmin = function() {
+userSchema.methods.isDefaultAdmin = function () {
     return this.role === UserRole.DEFAULT_ADMINISTRATOR;
 }
-userSchema.methods.validateCredentials = function(username, pass) {
+userSchema.methods.validateCredentials = function (username, pass) {
     return compare(pass, this.password)
         .then(isCorrect => {
-            if(this.username === username && isCorrect) return this;
+            if (this.username === username && isCorrect) return this;
             else return null;
         })
         .catch(err => false);
 }
-userSchema.virtual('displayName').get(function() {
+userSchema.virtual('displayName').get(function () {
     let partialsName = this.name.split(' ');
     return partialsName.length > 1 ? `${partialsName[0]} ${partialsName[partialsName.length - 1]}` :
         this.name;
@@ -137,4 +157,8 @@ userSchema.virtual('displayName').get(function() {
 
 let User = mongoose.model('User', userSchema);
 
-export { User, UserRole, PAGINATION_LIMIT };
+export {
+    User,
+    UserRole,
+    PAGINATION_LIMIT
+};

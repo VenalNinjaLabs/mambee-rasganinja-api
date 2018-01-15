@@ -2,16 +2,24 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { config } from 'dotenv';
+import {
+    config
+} from 'dotenv';
 
-import { setupDefaultAdminUser, setupMoment } from './config';
+import {
+    setupDefaultAdminUser,
+    setupMoment
+} from './config';
 
 import * as middleware from './middleware';
 
-import { MongoFactory } from './database';
+import {
+    MongoFactory
+} from './database';
 
 import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
+import RasgadaRouter from './routes/rasgada';
 
 config();
 
@@ -27,6 +35,7 @@ app.use(middleware.authFilter);
 // API routes
 app.use('/api/auth', AuthRouter);
 app.use('/api/users', UserRouter);
+app.use('/api/rasgadas', RasgadaRouter);
 
 // Error handling
 app.use(middleware.errorLogger);
