@@ -56,7 +56,18 @@ export default class RasgadaController {
         try {
             let rasgada = new Rasgada(req.body);
             rasgada.save()
-                .then(rasgada => res.json(rasgada))
+                .then(rasgada => {
+                    let client = mqtt.connect('mqtt://aws.canionlabs.io');
+                    client.on('connect', function () {
+                        try {
+                            client.subscribe('canionlabs/led')
+                            client.publish('canionlabs/led', 'blue');
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    })
+                    res.json(rasgada)
+                })
                 .catch(next);
         } catch (e) {
             next(e);
@@ -104,10 +115,7 @@ export default class RasgadaController {
                 })
                 .then(rasgada => {
 
-                    let client = mqtt.connect({
-                        host: 'mqtt://aws.canionlabs.io',
-                        port: 1883
-                    });
+                    let client = mqtt.connect('mqtt://aws.canionlabs.io');
                     client.on('connect', function () {
                         try {
                             client.subscribe('canionlabs/led')
@@ -142,7 +150,18 @@ export default class RasgadaController {
                         new: true
                     });
                 })
-                .then(rasgada => res.json(rasgada))
+                .then(rasgada => {
+                    let client = mqtt.connect('mqtt://aws.canionlabs.io');
+                    client.on('connect', function () {
+                        try {
+                            client.subscribe('canionlabs/led')
+                            client.publish('canionlabs/led', 'red');
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    })
+                    res.json(rasgada)
+                })
                 .catch(next)
         } catch (e) {
             next(e);
