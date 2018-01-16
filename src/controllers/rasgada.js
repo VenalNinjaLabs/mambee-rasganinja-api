@@ -1,3 +1,5 @@
+import mqtt from 'mqtt';
+
 import {
     Rasgada,
     PAGINATION_LIMIT
@@ -85,6 +87,7 @@ export default class RasgadaController {
         try {
             let id = req.params.id;
             let updatedRasgada = req.body;
+
             Rasgada
                 .findById(id)
                 .exec()
@@ -99,7 +102,23 @@ export default class RasgadaController {
                         new: true
                     });
                 })
-                .then(rasgada => res.json(rasgada))
+                .then(rasgada => {
+
+                    let client = mqtt.connect({
+                        host: 'mqtt://aws.canionlabs.io',
+                        port: 1883
+                    });
+                    client.on('connect', function () {
+                        try {
+                            client.subscribe('canionlabs/led')
+                            client.publish('canionlabs/led', 'green');
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    })
+
+                    res.json(rasgada)
+                })
                 .catch(next)
         } catch (e) {
             next(e);
