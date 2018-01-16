@@ -11,6 +11,9 @@ import {
 import {
     ExceptionFactory
 } from '../util';
+import {
+    setTimeout
+} from 'timers';
 
 export default class RasgadaController {
 
@@ -62,6 +65,9 @@ export default class RasgadaController {
                         try {
                             client.subscribe('canionlabs/led')
                             client.publish('canionlabs/led', 'blue');
+                            setTimeout(() => {
+                                client.publish('canionlabs/led', 'none');
+                            }, 500);
                         } catch (error) {
                             console.log(error)
                         }
@@ -120,6 +126,9 @@ export default class RasgadaController {
                         try {
                             client.subscribe('canionlabs/led')
                             client.publish('canionlabs/led', 'green');
+                            setTimeout(() => {
+                                client.publish('canionlabs/led', 'none');
+                            }, 500);
                         } catch (error) {
                             console.log(error)
                         }
@@ -156,6 +165,9 @@ export default class RasgadaController {
                         try {
                             client.subscribe('canionlabs/led')
                             client.publish('canionlabs/led', 'red');
+                            setTimeout(() => {
+                                client.publish('canionlabs/led', 'none');
+                            }, 500);
                         } catch (error) {
                             console.log(error)
                         }
